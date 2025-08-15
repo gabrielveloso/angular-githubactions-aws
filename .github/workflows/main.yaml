@@ -1,4 +1,4 @@
-name: ci/cd pipeline for aws angular application
+name: ci/cd pipeline for aws
 on:
   pull_request:
     branches:
