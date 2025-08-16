@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
   selector: 'app-add-task',
   imports: [],
-  template: `<p>add-task works!</p>`,
+  template: `<h1>ADD A NEW TASK - WORKS <h1>`,
   styleUrl: './add-task.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
