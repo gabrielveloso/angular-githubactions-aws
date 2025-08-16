@@ -1,59 +1,70 @@
 # AngularAws
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.6.
+this application is a demo to how to deploy a angular application with github action, AWS s3 and cloudfront
 
-## Development server
+## Video used as reference to this application
 
-To start a local development server, run:
+[Youtube video here](https://www.youtube.com/watch?v=LboLrOCENf0&t=11s)
 
-```bash
-ng serve
+## cloudfront url to access the app 
+https://d15dq7wdiusp4h.cloudfront.net/
+
+## main.yml file content
+
+```
+name: ci/cd pipeline for aws1
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install 
+
+      - name: Run tests
+        run: npm test -- --watch=false --browsers=ChromeHeadlessNoSandbox
+
+  CD:
+    name: Deploy to Production using aws s3
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm install 
+
+      - name: Build application
+        run: npm run build --prod
+
+      - name: Deploy to AWS S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args:  --delete
+        env:
+          AWS_S3_BUCKET: angular-aws-gava
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: 'dist/angular-aws/browser'
+          
+
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
